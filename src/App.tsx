@@ -1,25 +1,65 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState} from 'react';
 import './App.css';
+import TodoList from './TodoList'
+import { v4 as uuidv4 } from 'uuid'
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+
+  /*
+  [
+    { id:1,
+      nome:'Estudar Javascript',
+      feito:false
+    },
+    { id:2,
+      nome:'Assistir Better Call Saul',
+      feito:false
+    }, 
+    ]
+  */
+  const [tarefas, setTarefas] = useState<any[]>([])
+  const [nomeDigitado, setNomeDigitado] = useState('')
+
+  function adicionarTarefa(event : any){
+    console.log(nomeDigitado);
+    let id = uuidv4();
+    
+    let novaTarefa = { id,
+      nome:nomeDigitado,
+      feito:false
+    }
+    setTarefas(listaAtual => {
+      return [...listaAtual, novaTarefa]
+    })
+    
+    setNomeDigitado('')
+  }
+
+  function modificarTarefa(id) {
+    const novasTarefas = [...tarefas]
+    const tarefa = novasTarefas.find(todo => todo.id === id)
+    if(tarefa.feito == true){
+      tarefa.feito = false;
+    }else if(tarefa.feito == false){
+      tarefa.feito = true;
+    }
+    setTarefas(novasTarefas)
+  }
+
+  function limparTarefas(event : any){
+    setTarefas(listaAtual => {
+      return []
+    })
+  }
+
+  return (  
+    <>
+    <TodoList lista={tarefas} modificarTarefa={modificarTarefa}></TodoList>
+    <input type="text" value={nomeDigitado} onChange={e => {setNomeDigitado(e.target.value)}}></input>
+    <input type="button" onClick={adicionarTarefa} value="Adicionar TODO"></input>
+    <input type="button" onClick={limparTarefas} value="Limpar Todos"></input>
+    <div>{tarefas.filter(tarefa => tarefa.feito == false).length} Tarefas a fazer</div>
+    </>
   );
 }
 
